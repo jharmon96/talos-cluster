@@ -1,0 +1,8 @@
+# --- Talos/cluster secrets ---------------------------------------------------
+talosconfig          # contains cluster CA + bootstrap tokens
+# --- transient build artefacts ----------------------------------------------
+*.yaml~              # editor backups
+venv/
+talosconfig
+output/talosconfig   # still exclude talosconfig secret file
+talos-out/

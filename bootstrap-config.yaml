@@ -1,0 +1,76 @@
+# Bootstrap configuration with environment variable support
+# 
+# Environment variables:
+# - TALOS_CONFIG_CLUSTER_NAME: Kubernetes cluster name (default: my-k8s-cluster)
+# - TALOS_CONFIG_NETWORK_DNS: DNS server IP (default: 1.1.1.1)
+#
+# This file contains placeholders for sensitive information that must be
+# populated during deployment. All keys, tokens, and certificates have been
+# replaced with placeholders.
+version: v1alpha1
+debug: false
+persist: true
+machine:
+  type: controlplane
+  token: MACHINE_TOKEN_PLACEHOLDER
+  ca:
+    crt: MACHINE_CA_CRT_PLACEHOLDER
+    key: MACHINE_CA_KEY_PLACEHOLDER
+  certSANs:
+    - 172.22.40.10
+    - 172.22.40.79
+    - 172.22.40.80
+    - 172.22.40.81
+  kubelet:
+    image: ghcr.io/siderolabs/kubelet:v1.33.0
+    defaultRuntimeSeccompProfileEnabled: true
+    disableManifestsDirectory: true
+    extraArgs:
+      rotate-server-certificates: true
+  network:
+    interfaces:
+      - interface: ens18
+        dhcp: false
+        addresses:
+          - 172.22.40.79/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 172.22.40.1
+        vip:
+          ip: 172.22.40.10
+    nameservers:
+      - ${TALOS_CONFIG_NETWORK_DNS:-1.1.1.1}
+  install:
+    disk: /dev/vda
+    image: ghcr.io/siderolabs/installer:v1.10.2
+    wipe: false
+  features:
+    rbac: true
+    stableHostname: true
+    apidCheckExtKeyUsage: true
+    diskQuotaSupport: true
+    kubePrism:
+      enabled: true
+      port: 7445
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: true
+  nodeLabels:
+    node.kubernetes.io/exclude-from-external-load-balancers: ""
+cluster:
+  id: CLUSTER_ID_PLACEHOLDER
+  secret: CLUSTER_SECRET_PLACEHOLDER
+  controlPlane:
+    endpoint: https://172.22.40.79:6443
+  clusterName: ${TALOS_CONFIG_CLUSTER_NAME:-my-k8s-cluster}
+  network:
+    dnsDomain: cluster.local
+    podSubnets:
+      - 10.244.0.0/16
+    serviceSubnets:
+      - 10.96.0.0/12
+  token: CLUSTER_TOKEN_PLACEHOLDER
+  secretboxEncryptionSecret: SECRETBOX_ENCRYPTION_SECRET_PLACEHOLDER
+  ca:
+    crt: CLUSTER_CA_CRT_PLACEHOLDER
+    key: CLUSTER_CA_KEY_PLACEHOLDER

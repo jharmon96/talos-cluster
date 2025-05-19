@@ -1,0 +1,11 @@
+context: my-k8s-cluster
+contexts:
+  my-k8s-cluster:
+    endpoints:
+    - 172.22.40.11
+    - 172.22.40.12
+    - 172.22.40.13
+    ca: TALOSCONFIG_CA_PLACEHOLDER
+    crt: TALOSCONFIG_CRT_PLACEHOLDER
+    key: TALOSCONFIG_KEY_PLACEHOLDER
+    insecure: true
